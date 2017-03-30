@@ -81,6 +81,20 @@ class Api implements ApiInterface
      */
     public function run($source, array $params)
     {
+        //make sure image is properly converted to srgb
+        //inspired by https://github.com/mosbth/cimage/blob/master/CImage.php#L2552
+        $image      = new \Imagick($source);
+        $colorspace = $image->getImageColorspace();
+        $profiles      = $image->getImageProfiles('*', false);
+        $hasICCProfile = (array_search('icc', $profiles) !== false);
+        if ($colorspace != \Imagick::COLORSPACE_SRGB || $hasICCProfile) {
+            $sRGBicc = file_get_contents(dirname(__FILE__).'/../icc/sRGB_IEC61966-2-1_black_scaled.icc');
+            $image->profileImage('icc', $sRGBicc);
+
+            $image->transformImageColorspace(\Imagick::COLORSPACE_SRGB);
+            $image->writeImage($source);
+        }
+
         $image = $this->imageManager->make($source);
 
         foreach ($this->manipulators as $manipulator) {
