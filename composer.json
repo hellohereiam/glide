@@ -1,5 +1,5 @@
 {
-    "name": "hellohereiam/glide",
+    "name": "thephpleague/glide",
     "description": "Fork for thephpleague/glide to fix issues with color profile. Wonderfully easy on-demand image manipulation library with an HTTP based API.",
     "keywords": [
         "league",
